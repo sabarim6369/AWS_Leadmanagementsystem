@@ -745,8 +745,77 @@ const changepassword = async (req, res) => {
     }
   };
   
+  const deleteleads = async (req, res) => {
+    try {
+        const { id, assignedtelecallerid, adminid } = req.body;
+        console.log("Request Body:", req.body);
+
+        const Lead = req.db.model("Lead");
+        const Telecaller = req.db.model("Telecaller");
+
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({ message: "Invalid lead ID" });
+        }
+
+        // Step 1: Remove lead from telecaller if assigned
+        if (assignedtelecallerid && mongoose.Types.ObjectId.isValid(assignedtelecallerid)) {
+            await Telecaller.findByIdAndUpdate(
+                assignedtelecallerid,
+                { $pull: { leads: id } },
+                { new: true }
+            );
+
+            await Telecaller.findByIdAndUpdate(assignedtelecallerid, {
+                $inc: { pendingLeads: -1 },
+            });
+        } else {
+            console.error("Invalid assignedtelecallerid:", assignedtelecallerid);
+        }
+
+        // Step 2: Update lead status to inactive
+        const updatedLead = await Lead.findByIdAndUpdate(
+            id,
+            { status: "inactive" },
+            { new: true }
+        );
+
+        if (!updatedLead) {
+            return res.status(404).json({ message: "Lead not found" });
+        }
+
+        // Step 3: Update Admin's leads count
+        if (adminid && mongoose.Types.ObjectId.isValid(adminid)) {
+            const superAdminDbURI = process.env.MONGODB_SUPERADMINURI;
+
+            const superAdminConnection = await mongoose.createConnection(superAdminDbURI);
+            console.log("✅ Connected successfully to SuperAdmin DB.");
+
+            const AdminModel = superAdminConnection.model("Admin", require("../schema/Adminschema"));
+
+            const admin = await AdminModel.findByIdAndUpdate(
+                adminid,
+                { $inc: { leads: -1 } },  // Decrement the leads count
+                { new: true }
+            );
+
+            if (!admin) {
+                console.warn("⚠️ Admin not found with ID:", adminid);
+            }
+
+            // Close connection after use
+            await superAdminConnection.close();
+        }
+
+        res.status(200).json({ message: "Lead marked as inactive", updatedLead });
+
+    } catch (error) {
+        console.error("Error updating lead status:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
 
 
+  
 
 
 
@@ -766,5 +835,6 @@ module.exports = {
     getstats,
     changepassword,
     forceAssignLead,
-    addlogo
+    addlogo,
+    deleteleads
 };

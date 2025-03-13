@@ -14,7 +14,8 @@ const {
   getstats,
   changepassword,
   forceAssignLead,
-  addlogo 
+  addlogo ,
+  deleteleads
 } = require("../controller/admin");
 
 const router = express.Router();
@@ -34,4 +35,6 @@ router.put("/assignallleads",(req,res)=>assignallleads(req,res,req.db));
 router.get("/getadmindetails",(req,res)=>getadmindetails(req,res,req.db));
 router.get("/getstats",(req,res)=>getstats(req,res,req.db));
 router.post("/changepassword",(req,res)=>changepassword(req,res,req.db));
+router.post("/deleteleads",(req,res)=>deleteleads(req,res,req.db));
+
 module.exports = router;

@@ -173,6 +173,7 @@ const Leads = () => {
 const[Status,setStatus]=useState("");
 
   const filteredLeads = telecallerdata.filter(lead => 
+    lead.status!=="inactive" &&
     (lead.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     (lead.mobilenumber && lead.mobilenumber.toString().includes(searchQuery)) ||
     lead.email.includes(searchQuery))&&(Status===""|| lead.status === Status)
@@ -251,6 +252,24 @@ const[Status,setStatus]=useState("");
       }
     }
   };
+  const deleteLead = async (id, assignedtelecallerid) => {
+    const isConfirmed = window.confirm("Are you sure you want to delete this lead?");
+    
+    if (isConfirmed) {
+      try {
+        const response = await axios.post(
+          `${process.env.REACT_APP_API_URL}/admin/deleteleads`,
+          { id, assignedtelecallerid,adminid},
+          { headers: { database: databasename } }
+        );
+        settelecallerdata((prevData) => prevData.filter(lead => lead._id !== id));
+        alert("Lead deleted successfully!");
+      } catch (error) {
+        console.error("Error deleting lead:", error);
+        alert("Failed to delete lead. Please try again.");
+      }
+    }
+  };
   
 
   
@@ -321,12 +340,21 @@ if (loading1) {
         <div className="px-2 py-1 bg-green-500 text-xs md:text-sm text-white rounded-lg">
           {telecaller.status}
         </div>
+     
       </div>
 
       <div className="space-y-3 mb-4 flex-grow">
-        <div className={`flex items-center ${isDarkTheme ? "text-gray-300" : "text-gray-600"}`}>
+        <div className={`flex items-center ${isDarkTheme ? "text-gray-300" : "text-gray-600"} justify-between`}>
+          <div className='flex'>
           <i className="fa fa-map-marker-alt text-blue-400 text-lg mr-2"></i>
           <p className="truncate text-sm">{telecaller.address || "No address available"}</p>
+          </div>
+          <button
+                className="mt-2 text-red-500 hover:text-red-700 transition duration-300"
+                onClick={() => deleteLead(telecaller._id,telecaller.assignedTo?.[0]?._id)}
+              >
+                <i className="fa fa-trash-alt text-lg"></i>
+              </button>
         </div>
         <div className={`flex items-center ${isDarkTheme ? "text-gray-300" : "text-gray-600"}`}>
           <i className="fa fa-phone-alt text-blue-400 text-lg mr-2"></i>

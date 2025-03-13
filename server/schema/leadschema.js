@@ -15,7 +15,7 @@ const leadSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ["unassigned", "assigned", "warm", "cold", "hot", "fulfilled"],
+    enum: ["unassigned", "assigned", "warm", "cold", "hot", "fulfilled","inactive"],
     default: "unassigned",
   },
   assignedTo: [
