@@ -93,10 +93,8 @@ console.log(req.body)
     
             const logoFile = req.files.logo;
     
-            // Upload to Cloudinary
             const result = await uploadToCloudinary(logoFile.data, logoFile.name);
     
-            // Update admin's logo in the database
             await Admin.findByIdAndUpdate(adminid, { logo: result.fileUrl });
     
             res.status(200).json({
@@ -190,16 +188,16 @@ return res.status(200).json({message:"leads fetched successfully",allleads})
 }
 
 const addtelecaller = async (req, res) => {
+    console.log(req.body)
+  
     try {
         const { email, password, username, number, address, adminId } = req.body;
-
         if (!email || !password || !username || !number || !adminId) {
             return res.status(401).json({ message: "Please provide all required fields." });
         }
 
         const Telecaller = req.db.model("Telecaller");
 
-        // Check if the telecaller already exists
         const existingTelecaller = await Telecaller.findOne({ email });
         if (existingTelecaller) {
             return res.status(402).json({ message: "Telecaller with this email already exists." });
@@ -251,7 +249,85 @@ const addtelecaller = async (req, res) => {
         res.status(500).json({ message: "Error adding telecaller", error: err.message });
     }
 };
+const addimportedtelecallers = async (req, res) => {
+    try {
+        console.log(req.body);
+        const { telecallerData, adminid } = req.body;
 
+        if (!mongoose.Types.ObjectId.isValid(adminid)) {
+            console.log("Invalid adminid:", adminid);
+            return res.status(400).json({ message: "Invalid Admin ID" });
+        }
+        if (!Array.isArray(telecallerData) || telecallerData.length === 0) {
+            return res.status(400).json({ message: "No data provided or invalid format." });
+        }
+
+        const Telecaller = req.db.model("Telecaller");
+let alreadythereleads=false;
+        let newLeads = [];
+        let newEmails = []; 
+        for (const lead of telecallerData) {
+            const existingLead = await Telecaller.findOne({ 
+                $or: [{ email: lead.Email }] 
+            });
+
+            if (!existingLead) {
+                alreadythereleads=true;
+                newLeads.push({
+                    username: lead.Name,
+                    number: lead.Phone,
+                    address: lead.City || "",
+                    // gender: lead.Gender || "",
+                    // country: lead.Country || "",
+                    // age: lead.Age || null,
+                    // date: lead.Date || "",
+                    // id: lead.Id || null,
+                    email: lead.Email,
+                    admin:adminid,
+                    password:lead.Phone,
+                    leads: [],
+            history: [],
+                });
+                newEmails.push(lead.Email); 
+            }
+        }
+
+        if (newLeads.length > 0) {
+            console.log("Processing new leads...");
+
+            const result = await Telecaller.insertMany(newLeads);
+            console.log("New leads inserted successfully:", result.length);
+
+            const superAdminDbURI = process.env.MONGODB_SUPERADMINURI;
+            const superAdminConnection = await mongoose.createConnection(superAdminDbURI).asPromise();
+            console.log("Connected successfully to SuperAdmin DB");
+
+            const AdminModel = superAdminConnection.model("Admin", require("../schema/Adminschema"));
+
+            const updatedAdmin = await AdminModel.findByIdAndUpdate(
+                adminid,
+                { $addToSet: { telecallers: { $each: newEmails.map(email => ({ email })) } } }, // Wrap each email in an object
+                { new: true }
+            );
+            
+
+            console.log("Updated Admin leads count:", updatedAdmin);
+
+            res.status(201).json({
+                message: "Leads uploaded successfully",
+                totalLeadsInserted: result.length,
+                adminUpdateStatus: updatedAdmin
+            });
+        } else {
+            console.log("No new leads to insert.");
+            res.status(200).json({ message: "No new Telecallers added. All Telecallers already exist." });
+        }
+
+    } catch (err) {
+        console.error("Error uploading leads:", err);
+        res.status(500).json({ message: "Error uploading leads", error: err.message });
+    }
+};
 
 
 
@@ -836,5 +912,6 @@ module.exports = {
     changepassword,
     forceAssignLead,
     addlogo,
-    deleteleads
+    deleteleads,
+    addimportedtelecallers
 };
