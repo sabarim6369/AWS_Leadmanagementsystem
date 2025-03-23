@@ -397,6 +397,7 @@ const addLeadsFromTelecaller = async (req, res) => {
 
         // Assign Leads to Telecaller
         const Telecaller = req.db.model("Telecaller");
+    
         const telecaller = await Telecaller.findById(telecallerId);
         if (!telecaller) {
             return res.status(404).json({ message: "Telecaller not found." });
@@ -417,7 +418,78 @@ const addLeadsFromTelecaller = async (req, res) => {
     }
 };
 
+const addleadsfromimport = async (req, res) => {
+    try {
+        console.log(req.body);
+        const { leadsData, adminid } = req.body;
 
+        if (!mongoose.Types.ObjectId.isValid(adminid)) {
+            console.log("Invalid adminid:", adminid);
+            return res.status(400).json({ message: "Invalid Admin ID" });
+        }
+        if (!Array.isArray(leadsData) || leadsData.length === 0) {
+            return res.status(400).json({ message: "No data provided or invalid format." });
+        }
+
+        const Leads = req.db.model("Lead");
+let alreadythereleads=false;
+        let newLeads = [];
+
+        for (const lead of leadsData) {
+            const existingLead = await Leads.findOne({ 
+                $or: [{ email: lead.Email }] 
+            });
+
+            if (!existingLead) {
+                alreadythereleads=true;
+                newLeads.push({
+                    name: lead.Name,
+                    mobilenumber: lead.Phone,
+                    address: lead.City || "",
+                    gender: lead.Gender || "",
+                    country: lead.Country || "",
+                    age: lead.Age || null,
+                    date: lead.Date || "",
+                    id: lead.Id || null,
+                    email: lead.Email
+                });
+            }
+        }
+
+        if (newLeads.length > 0) {
+            console.log("Processing new leads...");
+
+            const result = await Leads.insertMany(newLeads);
+            console.log("New leads inserted successfully:", result.length);
+
+            const superAdminDbURI = process.env.MONGODB_SUPERADMINURI;
+            const superAdminConnection = await mongoose.createConnection(superAdminDbURI).asPromise();
+            console.log("Connected successfully to SuperAdmin DB");
+
+            const AdminModel = superAdminConnection.model("Admin", require("../schema/Adminschema"));
+
+            const updatedAdmin = await AdminModel.updateOne(
+                { _id: adminid },
+                { $inc: { leads: result.length } }
+            );
+
+            console.log("Updated Admin leads count:", updatedAdmin);
+
+            res.status(201).json({
+                message: "Leads uploaded successfully",
+                totalLeadsInserted: result.length,
+                adminUpdateStatus: updatedAdmin
+            });
+        } else {
+            console.log("No new leads to insert.");
+            res.status(200).json({ message: "No new leads added. All leads already exist." });
+        }
+
+    } catch (err) {
+        console.error("Error uploading leads:", err);
+        res.status(500).json({ message: "Error uploading leads", error: err.message });
+    }
+};
 
 
 module.exports = {
@@ -428,5 +500,6 @@ module.exports = {
     addnotestotelecallerandlead,
     addfiles,
     getTodaysCallbacks,
-    addLeadsFromTelecaller
+    addLeadsFromTelecaller,
+    addleadsfromimport
 };

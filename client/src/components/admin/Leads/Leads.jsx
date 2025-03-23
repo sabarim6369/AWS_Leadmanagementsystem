@@ -275,7 +275,7 @@ const[Status,setStatus]=useState("");
   
 if (loading1) {
   return (
-    <div className={`flex min-h-screen ${isDarkTheme ? 'bg-gray-900' : 'bg-white'}`}>
+    <div className={`flex min-h-screen ${isDarkTheme ? 'bg-gray-900' : 'bg-gray-100'}`}>
       <div className="hidden lg:block lg:w-[250px]">
         <Sidebar />
       </div>

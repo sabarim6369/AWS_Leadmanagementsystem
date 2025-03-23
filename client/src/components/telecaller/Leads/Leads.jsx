@@ -165,8 +165,8 @@ const TelecallersLeads = () => {
   const handleFileImport = async (allImportedData) => {
     try {
       const response = await axios.post(
-        `${process.env.REACT_APP_API_URL}/admin/addleads`,
-        { leadsData: allImportedData, adminid },
+        `${process.env.REACT_APP_API_URL}/telecaller/addLeadsFromTelecaller`,
+        { leadsData: allImportedData, adminid,telecallerId:telecallerid },
         { headers: { "database": databasename } }
       );
 
@@ -175,7 +175,8 @@ const TelecallersLeads = () => {
         closeImportPopup();
         await fetchLeads();
       } else {
-        toast.error("Unexpected response from server.");
+        console.log(response)
+        toast.error(response.data?.message||"unexpected error occured");
       }
     } catch (err) {
       console.error("Error uploading leads:", err);
