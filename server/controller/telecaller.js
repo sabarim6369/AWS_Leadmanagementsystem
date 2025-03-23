@@ -91,8 +91,18 @@ const getTelecallerHistory = async (req, res) => {
         const dailyStats = telecaller.dailyStats.find(stat => stat.date === today);
         console.log("Today's Daily Stats:", dailyStats);
 
-        // console.log(telecaller)
-        res.status(200).json({ history: telecaller.history,telecallerdetails:telecaller, dailyStats: dailyStats || {} });
+        const alltelelcaller=await Telecaller.find();
+        const topTelecallers = alltelelcaller
+        .map(tc => ({
+            username: tc.username,
+            email: tc.email,
+            number:tc.number,
+            address:tc.address,
+            totalcalls: (tc.dailyStats.find(stat => stat.date === today)?.totalcalls) || 0
+        }))
+        .sort((a, b) => b.totalcalls - a.totalcalls); 
+        console.log(topTelecallers)
+        res.status(200).json({ history: telecaller.history,telecallerdetails:telecaller, dailyStats: dailyStats || {},topTelecallers:topTelecallers });
     } catch (err) {
         console.error(err);
         res.status(500).json({ message: "Error fetching telecaller history.", error: err });

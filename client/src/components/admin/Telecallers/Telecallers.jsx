@@ -112,7 +112,7 @@ const[databasename,setdatabasename]=useState();
         if (response.data.totalLeadsInserted === 0) {
           toast.info("No new Telecaller to insert.");
         } else {
-          toast.success(`${response.data.totalLeadsInserted} leads uploaded successfully!`);
+          toast.success(`${response.data.totalLeadsInserted} Telecallers uploaded successfully!`);
         }
         closeImportPopup();
         await fetchLeads();

@@ -15,6 +15,7 @@ const TelecallersDashboard = () => {
   const [databaseName, setDatabaseName] = useState("");
   const[telecallerdata,settelecallerdata]=useState(null);
   const[dailystats,setdailystats]=useState(null);
+  const[toptelecallers,settoptelecallers]=useState([]);
   const { isDarkTheme } = useThemeStore();
 
     useEffect(() => {
@@ -42,6 +43,7 @@ const TelecallersDashboard = () => {
           );
           console.log("API Response:", response.data.telecallerdetails);
           settelecallerdata(response.data.telecallerdetails)
+          settoptelecallers(response.data.topTelecallers)
           setdailystats(response.data.dailyStats)
         } catch (error) {
           console.error("API Error:", error);
@@ -89,7 +91,7 @@ className={`p-2 pl-12 rounded-xl w-full ${
         </div>
 
         <div className="flex flex-col lg:flex-row w-full mt-4 gap-4">
-          <Toptelecallers isDarkTheme={isDarkTheme}/>
+          <Toptelecallers isDarkTheme={isDarkTheme} toptelecallers={toptelecallers}/>
         </div>
 
         <div className="flex flex-col lg:flex-row w-full gap-4 mt-4">

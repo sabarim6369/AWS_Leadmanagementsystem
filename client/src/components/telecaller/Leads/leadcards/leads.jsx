@@ -71,7 +71,7 @@ const Leadscard = ({ telecallerdata, viewmore, opennotes, databasename,isDarkThe
 
   return (
     <>
-      {telecallerdata.map((telecaller, index) => (
+    {telecallerdata.length>0?(telecallerdata.map((telecaller, index) => (
         <div
           key={telecaller._id || index}
           className={`rounded-2xl shadow-lg p-4 flex flex-col ${
@@ -142,7 +142,9 @@ const Leadscard = ({ telecallerdata, viewmore, opennotes, databasename,isDarkThe
             </button>
           </div>
         </div>
-      ))}
+      ))):( 
+<div className="ml-8 text-2xl text-2xl font-semibold text-gray-500">No leads assigned</div>
+      )}
 
       {showPopup && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 p-4">

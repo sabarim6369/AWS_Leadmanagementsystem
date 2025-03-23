@@ -270,7 +270,7 @@ let alreadythereleads=false;
             const existingLead = await Telecaller.findOne({ 
                 $or: [{ email: lead.Email }] 
             });
-
+            const hashedPassword = await bcrypt.hash(String(lead.Phone), 10);
             if (!existingLead) {
                 alreadythereleads=true;
                 newLeads.push({
@@ -284,7 +284,7 @@ let alreadythereleads=false;
                     // id: lead.Id || null,
                     email: lead.Email,
                     admin:adminid,
-                    password:lead.Phone,
+                    password:hashedPassword,
                     leads: [],
             history: [],
                 });
