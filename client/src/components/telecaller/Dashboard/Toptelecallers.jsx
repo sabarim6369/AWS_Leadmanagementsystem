@@ -42,7 +42,7 @@ const Toptelecallers = ({isDarkTheme = true,toptelecallers}) => {
             </thead>
             <tbody>
            
-              {toptelecallers.length > 0 ?(
+            {Array.isArray(toptelecallers) && toptelecallers.length > 0 ? (
               toptelecallers.map((telecallers,index)=>(
               <tr
                 className={`border-b ${
