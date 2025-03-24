@@ -190,7 +190,7 @@ const login = async (req, res) => {
 };
 const addnotestotelecallerandlead = async (req, res) => {
     console.log(req.body);
-    const { telecallerId, leadId, note, status, callbackTime, answered } = req.body;
+    const { telecallerId, leadId, note, status, callbackTime, answered,mode} = req.body;
     const Telecaller = req.db.model("Telecaller");
     const Lead = req.db.model("Lead");
     
@@ -229,9 +229,11 @@ const addnotestotelecallerandlead = async (req, res) => {
             if (lastNoteIndex >= 0) {
                 lead.notes[lastNoteIndex].callbackTime = new Date(callbackTime);
                 lead.notes[lastNoteIndex].callbackScheduled = true;
+                lead.notes[lastNoteIndex].mode = mode;
             }
             newHistory.callbackTime = new Date(callbackTime);
             newHistory.callbackScheduled = true;
+            newHistory.mode = mode;
         }
         telecaller.history.push(newHistory);
         telecaller.totalcalls += 1;

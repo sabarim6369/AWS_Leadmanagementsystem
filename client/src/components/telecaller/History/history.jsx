@@ -45,7 +45,7 @@ const History = () => {
         const doc = new jsPDF();
         doc.text("History Report", 14, 10);
   
-        const tableColumn = ["Lead Name", "Mobile", "Notes", "Callback", "Notes Taken At"];
+        const tableColumn = ["Lead Name", "Mobile", "Notes", "Callback","Mode", "Notes Taken At"];
         const tableRows = history.map((item) => [
           item.leadId?.name || "N/A",
           item.leadId?.mobilenumber || "N/A",
@@ -154,6 +154,7 @@ const History = () => {
                 <th className="p-4">Mobile</th>
                 <th className="p-4">Notes</th>
                 <th className="p-4">Callback</th>
+                <th className="p-4">Mode</th>
                 <th className="p-4">Notes Taken At</th>
               </tr>
             </thead>
@@ -184,6 +185,7 @@ const History = () => {
                           ? formatDate(item.callbackTime)
                           : "No Callback"}
                       </td>
+                      <td className={`p-4 italic ${isDarkTheme ? 'text-gray-400' : 'text-gray-500'}`}>{item.mode?item.mode:"Nil"}</td>
                       <td className={`p-4 text-sm ${isDarkTheme ? 'text-blue-300' : 'text-blue-600'}`}>
                         {formatDate(item.timestamp)}
                       </td>

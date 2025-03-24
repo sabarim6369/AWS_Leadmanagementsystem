@@ -9,7 +9,8 @@ const Notes = ({ setopennotespopup, leadfornotes, databasename, telecallerid }) 
   const [status, setStatus] = useState(leadfornotes?.status || "unassigned");
   const [callbackTime, setCallbackTime] = useState("");
   const [callAnswered, setCallAnswered] = useState(null);
-
+  const[ifcallbackscheduled,setcallbackscheduled]=useState(false);
+const[mode,setmode]=useState("");
   useEffect(() => {
     setStatus(leadfornotes?.status || "unassigned");
     // setCallbackTime(leadfornotes?.callbackTime || "");
@@ -20,9 +21,23 @@ const Notes = ({ setopennotespopup, leadfornotes, databasename, telecallerid }) 
 
   const handleNoteChange = (event) => setNewNote(event.target.value);
   const handleStatusChange = (event) => setStatus(event.target.value);
-  const handleCallbackTimeChange = (event) => setCallbackTime(event.target.value);
+  const handleCallbackTimeChange = (event) => {
+    setCallbackTime(event.target.value)
+    setcallbackscheduled(true);
+
+
+  };
 
   const saveNotes = async (noteText, answered) => {
+    if(!newNote){
+      toast.warning("Fill all fields")
+      return;
+    }
+    if(callbackTime&&!mode){
+      toast.warning("Complete mode of callback");
+      return;
+
+    }
     try {
       const response = await axios.post(
         `${process.env.REACT_APP_API_URL}/telecaller/addnotes`,
@@ -32,13 +47,17 @@ const Notes = ({ setopennotespopup, leadfornotes, databasename, telecallerid }) 
           note: noteText,
           status: answered ? status : leadfornotes.status,
           callbackTime: callbackTime ? new Date(callbackTime).toISOString() : null,
+          mode:mode,
           answered
         },
         { headers: { database: databasename } }
       );
 
       if (response.status === 200) toast.success("Notes added successfully");
-      setopennotespopup(false);
+      setTimeout(()=>{
+        setopennotespopup(false);
+
+      },[2000])
     } catch (error) {
       console.error("Error while saving notes:", error);
       toast.error("Failed to save note.");
@@ -140,6 +159,16 @@ const Notes = ({ setopennotespopup, leadfornotes, databasename, telecallerid }) 
                 onChange={handleCallbackTimeChange}
               />
             </div>
+            {
+              ifcallbackscheduled?<div className="mt-4">
+              <label className="block text-sm text-gray-700">Mode</label>
+              <input type="text" className="w-full p-2 border rounded-md text-sm" value={mode}
+              onChange={(e)=>setmode(e.target.value)}
+              />
+              </div>:
+            <div className=""></div>
+            }
+            
 
             <div className="flex justify-end mt-4 space-x-3">
               <button

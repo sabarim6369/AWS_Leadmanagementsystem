@@ -64,6 +64,9 @@ const leadSchema = new mongoose.Schema({
         type: Boolean,
         default: false,
       },
+      mode:{
+        type:String,
+      }
     },
   ],
   files: [
