@@ -85,12 +85,10 @@ const History = () => {
 
   return (
     <div className={`flex h-screen ${isDarkTheme ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-900'}`}>
-      {/* Sidebar */}
       <div className="lg:w-[250px] w-0">
         <Sidebar />
       </div>
 
-      {/* Main Content */}
       <div className="flex-grow p-6 overflow-auto">
         <div className="flex justify-between items-center mb-6">
           <h1 className={`text-3xl font-semibold ${isDarkTheme ? 'text-gray-100 border-gray-700' : 'text-gray-900 border-gray-200'}`}>

@@ -10,7 +10,11 @@ import useThemeStore from "../../store/themestore";
 import ImportPopup from './popup/importpopup';
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useLocation,useNavigate  } from "react-router-dom";
+
 const Telecallers = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
   const [opentools, setopentools] = useState(false);
   const [popup, setispopupopen] = useState(false);
   const[loading1,setloading1]=useState(false);
@@ -24,6 +28,16 @@ const Telecallers = () => {
   const { isDarkTheme } = useThemeStore();
   const [importPopup, setImportPopup] = useState(false);
 const[databasename,setdatabasename]=useState();
+useEffect(()=>{
+  if(location?.state?.openModal){
+    add("telecaller");
+    navigate(location.pathname, { replace: true, state: {} });
+  }
+  else if(location?.state?.openimportModal){
+    openImportPopup()
+    navigate(location.pathname, { replace: true, state: {} });
+  }
+},[location.state])
   useEffect(() => {
     const fetchalltelecallers = async () => {
       try {
@@ -56,7 +70,7 @@ const[databasename,setdatabasename]=useState();
     fetchalltelecallers();
   }, []);
   const openImportPopup = () => {
-    setopentools(false);
+    // setopentools(false);
     setImportPopup(true);
   };
   const openmodel = () => {
