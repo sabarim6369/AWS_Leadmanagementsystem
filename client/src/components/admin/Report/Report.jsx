@@ -153,7 +153,7 @@ const Report = () => {
                       </div>
                     </td>
                     <td className="py-2 px-4">
-                      <div className={`pt-1 pb-1 pl-4 pr-4 border-2 border-red-500 ${isDarkTheme ? 'bg-neutral-800' : 'bg-white'} text-red-500 shadow-md w-max rounded text-center`}>
+                      <div className={`pt-1 pb-1 pl-4 pr-4 border-2 border-red-500 ${isDarkTheme ? 'bg-neutral-800' : 'bg-white'} text-red-500 shadow-md w-32 rounded text-center`}>
                         {lead.status}
                       </div>
                     </td>
