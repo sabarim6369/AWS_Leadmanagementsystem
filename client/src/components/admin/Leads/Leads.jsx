@@ -125,7 +125,6 @@ const Leads = () => {
 
             if (confirmReassign) {
                 try {
-                    // Call API again to forcefully reassign the lead
                     await axios.put(
                         `${process.env.REACT_APP_API_URL}/admin/forceassign-leads`,
                         { telecallerId: telecallerid, leadId: selectedleadforassignment },
@@ -172,11 +171,14 @@ const Leads = () => {
   };
 const[Status,setStatus]=useState("");
 
-  const filteredLeads = telecallerdata.filter(lead => 
-    lead.status!=="inactive" &&
-    (lead.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    (lead.mobilenumber && lead.mobilenumber.toString().includes(searchQuery)) ||
-    lead.email?.includes(searchQuery))&&(Status===""|| lead.status === Status)
+  const filteredLeads = telecallerdata.filter(
+    (lead) =>
+      lead.status !== "inactive" &&
+      (lead.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (lead.mobilenumber &&
+          lead.mobilenumber.toString().includes(searchQuery)) ||
+        lead.email?.includes(searchQuery)) &&
+      (Status === "" || lead.status === Status)
   );
 
   const openassignleads = async () => {
