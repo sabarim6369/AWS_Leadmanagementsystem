@@ -61,7 +61,7 @@ const Report = () => {
   };
 
   const filteredLeads = leads.filter(lead => 
-    lead.name.toLowerCase().includes(searchQuery.toLowerCase())
+    lead.name?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const generateExcel = () => {
