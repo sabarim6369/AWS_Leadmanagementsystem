@@ -174,9 +174,9 @@ const[Status,setStatus]=useState("");
 
   const filteredLeads = telecallerdata.filter(lead => 
     lead.status!=="inactive" &&
-    (lead.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    (lead.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
     (lead.mobilenumber && lead.mobilenumber.toString().includes(searchQuery)) ||
-    lead.email.includes(searchQuery))&&(Status===""|| lead.status === Status)
+    lead.email?.includes(searchQuery))&&(Status===""|| lead.status === Status)
   );
 
   const openassignleads = async () => {
