@@ -9,7 +9,8 @@ import axios from 'axios';
 import { jwtDecode } from "jwt-decode";
 import HashLoader from "react-spinners/HashLoader";
 import useThemeStore from '../../store/themestore';
-
+import Toolmodal from "./Popups/Toolmodal"
+import { useNavigate } from 'react-router-dom';
 const TelecallersDashboard = () => {
   const [telecallerid, setTelecallerId] = useState("");
   const [databaseName, setDatabaseName] = useState("");
@@ -17,6 +18,11 @@ const TelecallersDashboard = () => {
   const[dailystats,setdailystats]=useState(null);
   const[toptelecallers,settoptelecallers]=useState([]);
   const { isDarkTheme } = useThemeStore();
+  const [opentools, setopentools] = useState(false);
+  const [popup, setispopupopen] = useState(false);
+  const [type, settype] = useState("");
+  const [importPopup, setImportPopup] = useState(false);
+  const navigate=useNavigate();
 
     useEffect(() => {
       const token = localStorage.getItem("token");
@@ -26,11 +32,26 @@ const TelecallersDashboard = () => {
 
         setDatabaseName(tokenvalidation.databaseName);
         setTelecallerId(tokenvalidation.telecallerId);
-        
       }
     }, []);
-
-
+    const add = async (data) => {
+      setopentools(!opentools);
+      if (data === "admin") {
+        navigate("/leads",{ state: { openModal: true } })
+      } else {
+        navigate("/leads",{ state: { openimportModal: true } })
+      }
+    };
+  
+    const navigatetotelecallerspage=()=>{
+      // navigate("/telecallers")
+      setopentools(!opentools);
+  
+    }
+    const openImportPopup = () => {
+      setopentools(false);
+      setImportPopup(true);
+    };
   useEffect(() => {
     if (telecallerid && databaseName) {
       const getalldata = async () => {
@@ -63,42 +84,58 @@ const TelecallersDashboard = () => {
     </div>;
   }
   return (
-    <div  className={`flex min-h-screen ${
-      isDarkTheme ? "bg-gray-900" : "bg-gray-100"
-    }`}>
+    <div
+      className={`flex min-h-screen ${
+        isDarkTheme ? "bg-gray-900" : "bg-gray-100"
+      }`}
+    >
       <div className="lg:w-[250px] w-0">
         <Sidebar />
       </div>
 
-      <div className="flex-grow p-4 md:p-6 overflow-auto">
-        <div className="p-2 relative w-full max-w-[500px]">
-          <i   className={`fa fa-search text-2xl absolute left-4 top-1/2 transform -translate-y-1/2 ${
-                isDarkTheme ? "text-white" : "text-black"
-              }`}></i>
+      <div className="flex-grow p-4 md:p-6 overflow-auto ">
+        <div className="flex justify-between">
+        <div className="p-2 relative w-full max-w-[500px] ">
+          <i
+            className={`fa fa-search text-2xl absolute left-4 top-1/2 transform -translate-y-1/2 ${
+              isDarkTheme ? "text-white" : "text-black"
+            }`}
+          ></i>
           <input
-className={`p-2 pl-12 rounded-xl w-full ${
-  isDarkTheme ? "bg-gray-700 text-white" : "bg-white text-black"
-}`}            placeholder="Search here..."
+            className={`p-2 pl-12 rounded-xl w-full ${
+              isDarkTheme ? "bg-gray-700 text-white" : "bg-white text-black"
+            }`}
+            placeholder="Search here..."
           />
         </div>
+        <div className={`fa fa-bars ${isDarkTheme?'text-white':'text-black'} mt-3 cursor-pointer`} onClick={navigatetotelecallerspage}></div>
+        </div>
         <div className="flex flex-col lg:flex-row w-full gap-4">
-            <Todayscalls
+          <Todayscalls
             telecallerdata={telecallerdata}
             dailystats={dailystats}
             isDarkTheme={isDarkTheme}
-            />
-          <Fullfilment isDarkTheme={isDarkTheme}/>
+          />
+          <Fullfilment isDarkTheme={isDarkTheme} />
         </div>
 
         <div className="flex flex-col lg:flex-row w-full mt-4 gap-4">
-          <Toptelecallers isDarkTheme={isDarkTheme} toptelecallers={toptelecallers}/>
+          <Toptelecallers
+            isDarkTheme={isDarkTheme}
+            toptelecallers={toptelecallers}
+          />
         </div>
 
         <div className="flex flex-col lg:flex-row w-full gap-4 mt-4">
-          <LeadStatus isDarkTheme={isDarkTheme}/>
-          <Callinsights isDarkTheme={isDarkTheme}/>
+          <LeadStatus isDarkTheme={isDarkTheme} />
+          <Callinsights isDarkTheme={isDarkTheme} />
         </div>
       </div>
+      <Toolmodal
+              opentools={opentools}
+              add={add}
+              openImportPopup={openImportPopup}
+            />
     </div>
   );
 };

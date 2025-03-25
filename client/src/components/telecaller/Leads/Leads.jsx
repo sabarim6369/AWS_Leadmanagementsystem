@@ -15,8 +15,11 @@ import Leadscard from './leadcards/leads';
 import Searchbar from './headersection/searchbar';
 import { jwtDecode } from "jwt-decode";
 import useThemeStore from "../../store/themestore";
+import { useLocation,useNavigate  } from "react-router-dom";
 
 const TelecallersLeads = () => {
+   const location = useLocation();
+    const navigate = useNavigate();
   const [opentools, setopentools] = useState(false);
   const [popup, setispopupopen] = useState(false);
   const [loading1, setloading1] = useState(false);
@@ -33,7 +36,16 @@ const TelecallersLeads = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [Status, setStatus] = useState("");
   const { isDarkTheme } = useThemeStore();
-
+useEffect(()=>{
+  if(location?.state?.openModal){
+    add("telecaller");
+    navigate(location.pathname, { replace: true, state: {} });
+  }
+  else if(location?.state?.openimportModal){
+    openImportPopup()
+    navigate(location.pathname, { replace: true, state: {} });
+  }
+},[location.state])
   const fetchLeads = useCallback(async () => {
     try {
       const token = localStorage.getItem("token");
@@ -191,10 +203,12 @@ const TelecallersLeads = () => {
   };
 
   const filteredLeads = telecallerdata.filter(lead =>
-    (lead.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (lead.mobilenumber && lead.mobilenumber.toString().includes(searchQuery)) ||
-      lead.email.includes(searchQuery)) && (Status === "" || lead.status === Status)
+    (lead.name?.toLowerCase().includes(searchQuery.toLowerCase()) || 
+     (lead.mobilenumber && lead.mobilenumber.toString().includes(searchQuery)) || 
+     lead.email?.includes(searchQuery)) && 
+    (Status === "" || lead.status === Status)
   );
+  
 
   if (loading1) {
     return (
