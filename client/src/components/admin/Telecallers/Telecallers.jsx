@@ -1,20 +1,14 @@
 import React from 'react'
 import Sidebar from '../../../utils/sidebar'
-import Toolmodal from './popup/toolmodal'
+import Toolmodal from '../Dashboard/popups/Toolmodal'
 import Addpopup from './popup/addpopup'
-import { useState, useEffect,useCallback } from 'react'
+import { useState, useEffect } from 'react'
 import decodeToken from '../../../utils/jwtdecode'
 import axios from 'axios'
 import HashLoader from "react-spinners/HashLoader";
 import useThemeStore from "../../store/themestore";
-import ImportPopup from './popup/importpopup';
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import { useLocation,useNavigate  } from "react-router-dom";
 
 const Telecallers = () => {
-  const location = useLocation();
-  const navigate = useNavigate();
   const [opentools, setopentools] = useState(false);
   const [popup, setispopupopen] = useState(false);
   const[loading1,setloading1]=useState(false);
@@ -26,18 +20,7 @@ const Telecallers = () => {
   const options = ["Option 1", "Option 2", "Option 3"];
   const [searchQuery, setSearchQuery] = useState("");
   const { isDarkTheme } = useThemeStore();
-  const [importPopup, setImportPopup] = useState(false);
-const[databasename,setdatabasename]=useState();
-useEffect(()=>{
-  if(location?.state?.openModal){
-    add("telecaller");
-    navigate(location.pathname, { replace: true, state: {} });
-  }
-  else if(location?.state?.openimportModal){
-    openImportPopup()
-    navigate(location.pathname, { replace: true, state: {} });
-  }
-},[location.state])
+
   useEffect(() => {
     const fetchalltelecallers = async () => {
       try {
@@ -47,7 +30,7 @@ useEffect(()=>{
         const adminId = tokenvalidation.adminId;
         setadminid(adminId);
         const databaseName = tokenvalidation.databaseName;
-        setdatabasename(databaseName)
+  
         const response = await axios.get(
           `${process.env.REACT_APP_API_URL}/admin/getalltelecaller`,
           { headers: { database: databaseName } }
@@ -69,88 +52,14 @@ useEffect(()=>{
   
     fetchalltelecallers();
   }, []);
-  const openImportPopup = () => {
-    // setopentools(false);
-    setImportPopup(true);
-  };
+  
   const openmodel = () => {
     setopentools(!opentools);
   };
-  const openassignleads = async () => {
-    // try {
-    //   const response = await axios.put(
-    //     `${process.env.REACT_APP_API_URL}/admin/assignallleads`,
-    //     {},
-    //     { headers: { "database": databasename } }
-    //   );
 
-    //   toast.success(response.data.message || "Leads assigned successfully.");
-    //   await fetchLeads();
-    // } catch (error) {
-    //   toast.error(error.response?.data?.message || "Failed to assign leads.");
-    //   console.error("Error:", error);
-    // }
-  };
   const [type, settype] = useState("");
   const [getuserdata, setgetuserdata] = useState();
-  const closeImportPopup = () => {
-    setImportPopup(false);
-  };
-  const fetchLeads = useCallback(async () => {
-    // try {
-    //   const token = localStorage.getItem("token");
-    //   const tokenvalidation = decodeToken(token);
-    //   const databaseName = tokenvalidation.databaseName;
-      
-    //   const response = await axios.get(`${process.env.REACT_APP_API_URL}/admin/getallleads`, {
-    //     headers: { "database": databaseName }
-    //   });
-    //   settelecallerdata(response.data.allleads);
-    //   return response.data.allleads;
-    // } catch (error) {
-    //   console.error("Error fetching leads:", error);
-    //   return null;
-    // }
-  }, []);
-  const handleFileImport = async (allImportedData) => {
-    try {
-      console.log("😍😍😍😍😍😍😍😍",allImportedData)
-      const response = await axios.post(
-        `${process.env.REACT_APP_API_URL}/admin/addimportedtelecaller`,
-        { telecallerData: allImportedData, adminid },
-        { headers: { database: databasename } }
-      );
-      console.log("😍😍😍😍😍😍😍😍")
 
-      if (response.status === 201) {
-        if (response.data.totalLeadsInserted === 0) {
-          toast.info("No new Telecaller to insert.");
-        } else {
-          toast.success(`${response.data.totalLeadsInserted} Telecallers uploaded successfully!`);
-        }
-        closeImportPopup();
-        await fetchLeads();
-      } else {
-        toast.error(response.data?.message || "Unexpected response from server.");
-      }
-    } catch (err) {
-      console.error("Error uploading leads:", err);
-      
-      if (err.response) {
-        // Handling specific errors from the server
-        if (err.response.status === 400) {
-          toast.warning(err.response.data?.message || "Invalid data format.");
-        } else if (err.response.status === 500) {
-          toast.error("Server error. Please try again later.");
-        } else {
-          toast.error(err.response.data?.message || "Error uploading leads.");
-        }
-      } else {
-        // Network or unknown error
-        toast.error("Network error. Please check your connection.");
-      }
-    }
-  };
   const add = async (data) => {
     console.log(data);
     setopentools(!opentools)
@@ -175,21 +84,7 @@ useEffect(()=>{
   const closeModal = () => {
     setselectedtelecaller(null);
   };
-  const swapleads = async () => {
-    // try {
-    //   const response = await axios.put(
-    //     `${process.env.REACT_APP_API_URL}/admin/swapallleads`,
-    //     {},
-    //     { headers: { "database": databasename } }
-    //   );
 
-    //   toast.success(response.data.message || "Leads swapped successfully.");
-    //   await fetchLeads();
-    // } catch (error) {
-    //   toast.error(error.response?.data?.message || "Failed to swap leads.");
-    //   console.error("Error:", error);
-    // }
-  };
   const filteredTelecallers = telecallerdata.filter(telecaller => 
     telecaller.username.toLowerCase().includes(searchQuery.toLowerCase()) ||
     (telecaller.number && telecaller.number.toString().includes(searchQuery)) ||
@@ -217,36 +112,21 @@ useEffect(()=>{
       <div className="flex-grow p-4 md:p-6 overflow-auto">
         <div className="flex items-center justify-between mb-4">
           <h1 className={`text-3xl ${isDarkTheme ? 'text-white' : 'text-gray-900'}`}>Telecallers</h1>
-          <div className="flex items-center gap-4">
-  <button
-    className={`${isDarkTheme ? "text-white" : "text-black"} cursor-pointer`}
-    onClick={openmodel}
-  >
-    <i className="fa fa-bars text-xl"></i>
-  </button>
-  <Toolmodal
-    opentools={opentools}
-    add={add}
-    openImportPopup={openImportPopup}
-    openassignleads={openassignleads}
-    swapleads={swapleads}
-  />
-</div>
-          {/* <button
+          <button
             className="hidden sm:block px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg ml-auto"
             onClick={() => setispopupopen(true)}
           >
             Add Telecallers
-          </button> */}
-          {/* <div
+          </button>
+          <div
             className={`lg:hidden ${isDarkTheme ? 'text-white' : 'text-gray-900'} ml-auto mr-3 cursor-pointer`}
             onClick={openmodel}
           >
             <i className="fa fa-bars"></i>
-          </div> */}
-          {/* <div className="">
+          </div>
+          <div className="">
             <Toolmodal opentools={opentools} add={add} />
-          </div> */}
+          </div>
         </div>
 
         <div className="flex mb-6">
@@ -395,11 +275,7 @@ useEffect(()=>{
             </div>
           </div>
         )}
- <ImportPopup
-          isOpen={importPopup}
-          closePopup={closeImportPopup}
-          handleFileImport={handleFileImport}
-        />
+
         <Addpopup
           popup={popup}
           setispopupopen={setispopupopen}
@@ -407,7 +283,6 @@ useEffect(()=>{
           adminid={adminid}
         />
       </div>
-      <ToastContainer/>
     </div>
   );
 }

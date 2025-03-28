@@ -15,7 +15,7 @@ const leadSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ["unassigned", "assigned", "warm", "cold", "hot", "fulfilled","inactive"],
+    enum: ["unassigned", "assigned", "warm", "cold", "hot", "fulfilled"],
     default: "unassigned",
   },
   assignedTo: [
@@ -64,9 +64,6 @@ const leadSchema = new mongoose.Schema({
         type: Boolean,
         default: false,
       },
-      mode:{
-        type:String,
-      }
     },
   ],
   files: [

@@ -11,9 +11,7 @@ import Toolmodal from './popups/Toolmodal';
 import { jwtDecode } from "jwt-decode";
 import useThemeStore from '../../store/themestore';
 import axios from 'axios'
-import { useNavigate } from 'react-router-dom';
 const Dashboard = () => {
-  const navigate=useNavigate();
   const [opentools, setopentools] = useState(false);
   const [popup, setispopupopen] = useState(false);
   const [type, settype] = useState("");
@@ -74,20 +72,16 @@ const Dashboard = () => {
     console.log(data);
     setopentools(!opentools)
     if (data === "admin") {
-      navigate("/telecallers",{ state: { openModal: true } })
+      setispopupopen(true);
+      settype("admin");
     } else {
-      navigate("/telecallers",{ state: { openimportModal: true } })
-
+      setispopupopen(true);
+      settype("telecaller");
     }
   };
   const openmodel = () => {
     setopentools(!opentools);
   };
-  const navigatetotelecallerspage=()=>{
-    // navigate("/telecallers")
-    setopentools(true)
-
-  }
   return (
     <div
       className={`flex min-h-screen ${
@@ -99,7 +93,7 @@ const Dashboard = () => {
       </div>
 
       <div className="flex-grow p-4 md:p-6 overflow-auto">
-        <div className="flex justify-between">
+        <div className="flex">
           <div className="p-2 relative w-full max-w-[300px] ml-8 md:max-w-[500px] md:ml-0">
             <i
               className={`fa fa-search text-2xl absolute left-4 top-1/2 transform -translate-y-1/2 ${
@@ -113,7 +107,6 @@ const Dashboard = () => {
               placeholder="Search here..."
             />
           </div>
-          <div className={`fa fa-bars ${isDarkTheme?'text-white':'text-black'} mt-3 cursor-pointer`} onClick={navigatetotelecallerspage}></div>
         </div>
         <Toolmodal opentools={opentools} add={add} isDarkTheme={isDarkTheme} />
         <Callssummary stats={stats} isDarkTheme={isDarkTheme} />

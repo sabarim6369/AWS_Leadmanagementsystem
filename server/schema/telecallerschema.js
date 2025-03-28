@@ -113,9 +113,6 @@ const telecallerschema = new mongoose.Schema({
                 type: Boolean,
                 default: false,
             },
-            mode:{
-                type:String
-            }
         }
     ]
 });

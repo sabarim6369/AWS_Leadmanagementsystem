@@ -71,7 +71,7 @@ const Leadscard = ({ telecallerdata, viewmore, opennotes, databasename,isDarkThe
 
   return (
     <>
-    {telecallerdata.length>0?(telecallerdata.map((telecaller, index) => (
+      {telecallerdata.map((telecaller, index) => (
         <div
           key={telecaller._id || index}
           className={`rounded-2xl shadow-lg p-4 flex flex-col ${
@@ -81,27 +81,9 @@ const Leadscard = ({ telecallerdata, viewmore, opennotes, databasename,isDarkThe
           <h2 className={`text-lg md:text-xl font-semibold truncate ${isDarkTheme ? "text-white" : "text-black"}`}>
           {telecaller.name}
             </h2>
-            <div
-  className={`px-2 py-1 ${
-    telecaller.status === "active"
-      ? "bg-red-500"
-      : telecaller.status === "inactive"
-      ? "bg-red-500"
-      : telecaller.status === "unassigned"
-      ? "bg-pink-400"
-      :telecaller.status==="assigned"
-      ?"bg-blue-400"
-      :telecaller.status==="warm"
-      ?"bg-yellow-400"
-      :telecaller.status==="cold"
-      ?"bg-teal-500"
-      :telecaller.status==="hot"
-      ?"bg-red-500"
-      : "bg-yellow-400"
-  } text-sm text-white rounded-lg`}
->
-  {telecaller.status}
-</div>
+            <div className="px-2 py-1 bg-green-500 text-xs md:text-sm text-white rounded-lg whitespace-nowrap">
+              {telecaller.status === "assigned" ? "Pending" : telecaller.status}
+            </div>
           </div>
 
           <div className="space-y-2 mb-4 flex-grow">
@@ -142,9 +124,7 @@ const Leadscard = ({ telecallerdata, viewmore, opennotes, databasename,isDarkThe
             </button>
           </div>
         </div>
-      ))):( 
-<div className="ml-8 text-2xl text-2xl font-semibold text-gray-500">No leads assigned</div>
-      )}
+      ))}
 
       {showPopup && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 p-4">

@@ -7,8 +7,7 @@ const {
   addnotestotelecallerandlead,
   addfiles,
   getTodaysCallbacks,
-  addLeadsFromTelecaller,
-  addleadsfromimport
+  addLeadsFromTelecaller
 } = require("../controller/telecaller");
 
 const router = express.Router();
@@ -20,6 +19,5 @@ router.get("/getTodaysCallbacks/:telecallerId", (req, res) => getTodaysCallbacks
 router.post("/addnotes",(req,res)=>addnotestotelecallerandlead(req,res,req.db));
 router.post("/addfiles",(req,res)=>addfiles(req,res,req.db));
 router.post("/addLeadsFromTelecaller", (req, res) => addLeadsFromTelecaller(req, res, req.db));
-router.post("/addLeadsFromimport", (req, res) => addleadsfromimport(req, res, req.db));
 
 module.exports = router;

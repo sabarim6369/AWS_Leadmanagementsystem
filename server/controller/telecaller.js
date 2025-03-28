@@ -91,18 +91,8 @@ const getTelecallerHistory = async (req, res) => {
         const dailyStats = telecaller.dailyStats.find(stat => stat.date === today);
         console.log("Today's Daily Stats:", dailyStats);
 
-        const alltelelcaller=await Telecaller.find();
-        const topTelecallers = alltelelcaller
-        .map(tc => ({
-            username: tc.username,
-            email: tc.email,
-            number:tc.number,
-            address:tc.address,
-            totalcalls: (tc.dailyStats.find(stat => stat.date === today)?.totalcalls) || 0
-        }))
-        .sort((a, b) => b.totalcalls - a.totalcalls); 
-        console.log(topTelecallers)
-        res.status(200).json({ history: telecaller.history,telecallerdetails:telecaller, dailyStats: dailyStats || {},topTelecallers:topTelecallers });
+        // console.log(telecaller)
+        res.status(200).json({ history: telecaller.history,telecallerdetails:telecaller, dailyStats: dailyStats || {} });
     } catch (err) {
         console.error(err);
         res.status(500).json({ message: "Error fetching telecaller history.", error: err });
@@ -190,7 +180,7 @@ const login = async (req, res) => {
 };
 const addnotestotelecallerandlead = async (req, res) => {
     console.log(req.body);
-    const { telecallerId, leadId, note, status, callbackTime, answered,mode} = req.body;
+    const { telecallerId, leadId, note, status, callbackTime, answered } = req.body;
     const Telecaller = req.db.model("Telecaller");
     const Lead = req.db.model("Lead");
     
@@ -229,11 +219,9 @@ const addnotestotelecallerandlead = async (req, res) => {
             if (lastNoteIndex >= 0) {
                 lead.notes[lastNoteIndex].callbackTime = new Date(callbackTime);
                 lead.notes[lastNoteIndex].callbackScheduled = true;
-                lead.notes[lastNoteIndex].mode = mode;
             }
             newHistory.callbackTime = new Date(callbackTime);
             newHistory.callbackScheduled = true;
-            newHistory.mode = mode;
         }
         telecaller.history.push(newHistory);
         telecaller.totalcalls += 1;
@@ -409,7 +397,6 @@ const addLeadsFromTelecaller = async (req, res) => {
 
         // Assign Leads to Telecaller
         const Telecaller = req.db.model("Telecaller");
-    
         const telecaller = await Telecaller.findById(telecallerId);
         if (!telecaller) {
             return res.status(404).json({ message: "Telecaller not found." });
@@ -430,78 +417,7 @@ const addLeadsFromTelecaller = async (req, res) => {
     }
 };
 
-const addleadsfromimport = async (req, res) => {
-    try {
-        console.log(req.body);
-        const { leadsData, adminid } = req.body;
 
-        if (!mongoose.Types.ObjectId.isValid(adminid)) {
-            console.log("Invalid adminid:", adminid);
-            return res.status(400).json({ message: "Invalid Admin ID" });
-        }
-        if (!Array.isArray(leadsData) || leadsData.length === 0) {
-            return res.status(400).json({ message: "No data provided or invalid format." });
-        }
-
-        const Leads = req.db.model("Lead");
-let alreadythereleads=false;
-        let newLeads = [];
-
-        for (const lead of leadsData) {
-            const existingLead = await Leads.findOne({ 
-                $or: [{ email: lead.Email }] 
-            });
-
-            if (!existingLead) {
-                alreadythereleads=true;
-                newLeads.push({
-                    name: lead.Name,
-                    mobilenumber: lead.Phone,
-                    address: lead.City || "",
-                    gender: lead.Gender || "",
-                    country: lead.Country || "",
-                    age: lead.Age || null,
-                    date: lead.Date || "",
-                    id: lead.Id || null,
-                    email: lead.Email
-                });
-            }
-        }
-
-        if (newLeads.length > 0) {
-            console.log("Processing new leads...");
-
-            const result = await Leads.insertMany(newLeads);
-            console.log("New leads inserted successfully:", result.length);
-
-            const superAdminDbURI = process.env.MONGODB_SUPERADMINURI;
-            const superAdminConnection = await mongoose.createConnection(superAdminDbURI).asPromise();
-            console.log("Connected successfully to SuperAdmin DB");
-
-            const AdminModel = superAdminConnection.model("Admin", require("../schema/Adminschema"));
-
-            const updatedAdmin = await AdminModel.updateOne(
-                { _id: adminid },
-                { $inc: { leads: result.length } }
-            );
-
-            console.log("Updated Admin leads count:", updatedAdmin);
-
-            res.status(201).json({
-                message: "Leads uploaded successfully",
-                totalLeadsInserted: result.length,
-                adminUpdateStatus: updatedAdmin
-            });
-        } else {
-            console.log("No new leads to insert.");
-            res.status(200).json({ message: "No new leads added. All leads already exist." });
-        }
-
-    } catch (err) {
-        console.error("Error uploading leads:", err);
-        res.status(500).json({ message: "Error uploading leads", error: err.message });
-    }
-};
 
 
 module.exports = {
@@ -512,6 +428,5 @@ module.exports = {
     addnotestotelecallerandlead,
     addfiles,
     getTodaysCallbacks,
-    addLeadsFromTelecaller,
-    addleadsfromimport
+    addLeadsFromTelecaller
 };

@@ -173,12 +173,14 @@ const Sidebar = () => {
     onClick={role === "admin" ? handleLogoClick : undefined} // Only clickable for admin
 >
     {logo ? (
+        // If logo exists, show it
         <img 
             src={logo} 
             alt="Logo" 
-            className="w-full h-16 rounded-full object-cover"
+            className="w-16 h-16 rounded-full object-cover"
         />
     ) : (
+        // If no logo, show a placeholder with a pen icon only for admin
         <div className="w-16 h-16 rounded-full bg-gray-300 flex items-center justify-center relative">
             <i className="fas fa-user text-gray-600 text-2xl"></i>
             {role === "admin" && (

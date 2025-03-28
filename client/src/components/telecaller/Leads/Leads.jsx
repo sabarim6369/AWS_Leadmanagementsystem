@@ -15,11 +15,8 @@ import Leadscard from './leadcards/leads';
 import Searchbar from './headersection/searchbar';
 import { jwtDecode } from "jwt-decode";
 import useThemeStore from "../../store/themestore";
-import { useLocation,useNavigate  } from "react-router-dom";
 
 const TelecallersLeads = () => {
-   const location = useLocation();
-    const navigate = useNavigate();
   const [opentools, setopentools] = useState(false);
   const [popup, setispopupopen] = useState(false);
   const [loading1, setloading1] = useState(false);
@@ -36,16 +33,7 @@ const TelecallersLeads = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [Status, setStatus] = useState("");
   const { isDarkTheme } = useThemeStore();
-useEffect(()=>{
-  if(location?.state?.openModal){
-    add("telecaller");
-    navigate(location.pathname, { replace: true, state: {} });
-  }
-  else if(location?.state?.openimportModal){
-    openImportPopup()
-    navigate(location.pathname, { replace: true, state: {} });
-  }
-},[location.state])
+
   const fetchLeads = useCallback(async () => {
     try {
       const token = localStorage.getItem("token");
@@ -177,8 +165,8 @@ useEffect(()=>{
   const handleFileImport = async (allImportedData) => {
     try {
       const response = await axios.post(
-        `${process.env.REACT_APP_API_URL}/telecaller/addLeadsFromTelecaller`,
-        { leadsData: allImportedData, adminid,telecallerId:telecallerid },
+        `${process.env.REACT_APP_API_URL}/admin/addleads`,
+        { leadsData: allImportedData, adminid },
         { headers: { "database": databasename } }
       );
 
@@ -187,8 +175,7 @@ useEffect(()=>{
         closeImportPopup();
         await fetchLeads();
       } else {
-        console.log(response)
-        toast.error(response.data?.message||"unexpected error occured");
+        toast.error("Unexpected response from server.");
       }
     } catch (err) {
       console.error("Error uploading leads:", err);
@@ -203,12 +190,10 @@ useEffect(()=>{
   };
 
   const filteredLeads = telecallerdata.filter(lead =>
-    (lead.name?.toLowerCase().includes(searchQuery.toLowerCase()) || 
-     (lead.mobilenumber && lead.mobilenumber.toString().includes(searchQuery)) || 
-     lead.email?.includes(searchQuery)) && 
-    (Status === "" || lead.status === Status)
+    (lead.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (lead.mobilenumber && lead.mobilenumber.toString().includes(searchQuery)) ||
+      lead.email.includes(searchQuery)) && (Status === "" || lead.status === Status)
   );
-  
 
   if (loading1) {
     return (

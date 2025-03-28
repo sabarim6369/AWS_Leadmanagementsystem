@@ -12,7 +12,7 @@ const Toolmodal = ({opentools,add}) => {
           }}
         >
           <i className="fa fa-add text-white"></i>
-          <h3 className="text-white ml-3 ">Add Telecaller</h3>
+          <h3 className="text-white ml-3 ">Add Admin</h3>
         </div>
         <div
           className="flex items-center cursor-pointer mt-4"
@@ -21,7 +21,7 @@ const Toolmodal = ({opentools,add}) => {
           }}
         >
           <i className="fa fa-add text-white"></i>
-          <h3 className="text-white ml-3 text-wrap">Import Telecallers</h3>
+          <h3 className="text-white ml-3 text-wrap">Add Telecaller</h3>
         </div>
         <div className=""></div>
       </div>

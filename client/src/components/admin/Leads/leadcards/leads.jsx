@@ -10,8 +10,8 @@ const Leadscard=({telecallerdata,viewmore,Assignleads})=>{
             <h2 className="text-xl font-semibold text-white">
               {telecaller.name}
             </h2>
-            <div className={`px-2 py-1 ${telecaller.status==="active"?'bg-red-500':telecaller.status==="inactive"?'bg-red-500':'bg-yellow-400'}text-sm text-white rounded-lg`}>
-              {telecaller.name}
+            <div className="px-2 py-1 bg-green-500 text-sm text-white rounded-lg">
+              {telecaller.status}
             </div>
           </div>
 

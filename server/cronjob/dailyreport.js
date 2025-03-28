@@ -239,6 +239,8 @@ const sendEmail = async (adminEmail, filePath) => {
 
     return transporter.sendMail(mailOptions);
 };
+
+// Schedule the cron job
 nodeCron.schedule("0 22 * * *", async () => {
     console.log("Running Cron Job for Daily Reports");
 
