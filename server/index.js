@@ -6,7 +6,6 @@ const twilio = require('twilio');
 const session = require('express-session');
 const mongoose=require("mongoose")
 const { getDatabaseConnection } = require('./config/db');
-
 const adminrouter = require('./routers/adminRoutes');
 const superadminrouter = require('./routers/superadminRoute');
 const telecallerroute = require('./routers/telecallerRoutes');
@@ -17,8 +16,8 @@ const fileUpload = require("express-fileupload");
 
 app.use(express.json());
 app.use(cors());
-app.use(express.urlencoded({ extended: true })); // Parse URL-encoded data
-app.use(fileUpload()); // Handle file uploads
+app.use(express.urlencoded({ extended: true })); 
+app.use(fileUpload());
 app.use((req, res, next) => {
   const { database } = req.headers; 
   if (!database) {

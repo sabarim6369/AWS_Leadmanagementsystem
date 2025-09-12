@@ -307,56 +307,91 @@ if (loading1) {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-  {filteredLeads.map((telecaller, index) => (
-    <div
-      key={telecaller._id || index}
-      className={`rounded-2xl shadow-lg p-4 flex flex-col ${
-        isDarkTheme ? "bg-gray-800 text-white" : "bg-white text-black"
-      }`}
-    >
-      <div className="flex items-center justify-between mb-4">
-        <h2 className={`text-lg md:text-xl font-semibold truncate ${isDarkTheme ? "text-white" : "text-black"}`}>
-          {telecaller.name}
-        </h2>
-        <div className="px-2 py-1 bg-green-500 text-xs md:text-sm text-white rounded-lg">
-          {telecaller.status}
-        </div>
-      </div>
+          {filteredLeads.length > 0 ? (
+            filteredLeads.map((telecaller, index) => (
+              <div
+                key={telecaller._id || index}
+                className={`rounded-2xl shadow-lg p-4 flex flex-col ${
+                  isDarkTheme ? "bg-gray-800 text-white" : "bg-white text-black"
+                }`}
+              >
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className={`text-lg md:text-xl font-semibold truncate ${isDarkTheme ? "text-white" : "text-black"}`}>
+                    {telecaller.name}
+                  </h2>
+                  <div className="px-2 py-1 bg-green-500 text-xs md:text-sm text-white rounded-lg">
+                    {telecaller.status}
+                  </div>
+                </div>
 
-      <div className="space-y-3 mb-4 flex-grow">
-        <div className={`flex items-center ${isDarkTheme ? "text-gray-300" : "text-gray-600"}`}>
-          <i className="fa fa-map-marker-alt text-blue-400 text-lg mr-2"></i>
-          <p className="truncate text-sm">{telecaller.address || "No address available"}</p>
-        </div>
-        <div className={`flex items-center ${isDarkTheme ? "text-gray-300" : "text-gray-600"}`}>
-          <i className="fa fa-phone-alt text-blue-400 text-lg mr-2"></i>
-          <p className="text-sm">+91 {telecaller.mobilenumber}</p>
-        </div>
-        <div className={`flex items-center ${isDarkTheme ? "text-gray-300" : "text-gray-600"}`}>
-          <i className="fa fa-envelope text-blue-400 text-lg mr-2"></i>
-          <p className="text-sm truncate">
-            Assigned To: {telecaller.assignedTo?.[0]?.email || "Not Assigned"}
-          </p>
-        </div>
-      </div>
+                <div className="space-y-3 mb-4 flex-grow">
+                  <div className={`flex items-center ${isDarkTheme ? "text-gray-300" : "text-gray-600"}`}>
+                    <i className="fa fa-map-marker-alt text-blue-400 text-lg mr-2"></i>
+                    <p className="truncate text-sm">{telecaller.address || "No address available"}</p>
+                  </div>
+                  <div className={`flex items-center ${isDarkTheme ? "text-gray-300" : "text-gray-600"}`}>
+                    <i className="fa fa-phone-alt text-blue-400 text-lg mr-2"></i>
+                    <p className="text-sm">+91 {telecaller.mobilenumber}</p>
+                  </div>
+                  <div className={`flex items-center ${isDarkTheme ? "text-gray-300" : "text-gray-600"}`}>
+                    <i className="fa fa-envelope text-blue-400 text-lg mr-2"></i>
+                    <p className="text-sm truncate">
+                      Assigned To: {telecaller.assignedTo?.[0]?.email || "Not Assigned"}
+                    </p>
+                  </div>
+                </div>
 
-      <div className="flex flex-col sm:flex-row gap-2 mt-auto">
-        <button
-          className="flex-1 py-2 px-4 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition duration-300"
-          onClick={() => viewmore(telecaller)}
-        >
-          View More
-        </button>
-        <button
-          className="flex-1 py-2 px-4 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition duration-300"
-          onClick={() => Assignleads(telecaller._id)}
-        >
-          Assign
-        </button>
-      </div>
-    </div>
-  ))}
-</div>
+                <div className="flex flex-col sm:flex-row gap-2 mt-auto">
+                  <button
+                    className="flex-1 py-2 px-4 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition duration-300"
+                    onClick={() => viewmore(telecaller)}
+                  >
+                    View More
+                  </button>
+                  <button
+                    className="flex-1 py-2 px-4 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition duration-300"
+                    onClick={() => Assignleads(telecaller._id)}
+                  >
+                    Assign
+                  </button>
+                </div>
+              </div>
+            ))
+          ) : (
+            <div className="col-span-1 sm:col-span-2 lg:col-span-3 xl:col-span-4 flex flex-col items-center justify-center py-16">
+              <div className={`${isDarkTheme ? 'bg-gray-800' : 'bg-white'} rounded-3xl shadow-xl p-12 text-center max-w-md mx-auto`}>
+                <div className="mb-6">
+                  <i className="fas fa-clipboard-list text-6xl text-gray-400 mb-4"></i>
+                </div>
+                <h3 className={`text-2xl font-bold mb-4 ${isDarkTheme ? 'text-white' : 'text-gray-900'}`}>
+                  No Leads Found
+                </h3>
+                <p className={`text-lg mb-6 ${isDarkTheme ? 'text-gray-400' : 'text-gray-600'}`}>
+                  {telecallerdata.length === 0 
+                    ? "It looks like you haven't added any leads yet. Start by adding your first lead or importing leads from a file!"
+                    : "No leads match your search criteria. Try adjusting your search terms or filters."
+                  }
+                </p>
+                <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                  <button
+                    onClick={() => add("telecaller")}
+                    className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-6 py-3 rounded-full font-semibold hover:from-blue-600 hover:to-purple-700 transform hover:scale-105 transition duration-300 shadow-lg"
+                  >
+                    <i className="fas fa-plus mr-2"></i>
+                    Add Lead
+                  </button>
+                  <button
+                    onClick={openImportPopup}
+                    className="bg-gradient-to-r from-green-500 to-teal-600 text-white px-6 py-3 rounded-full font-semibold hover:from-green-600 hover:to-teal-700 transform hover:scale-105 transition duration-300 shadow-lg"
+                  >
+                    <i className="fas fa-file-import mr-2"></i>
+                    Import Leads
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
 
 
         {selectedtelecaller && (

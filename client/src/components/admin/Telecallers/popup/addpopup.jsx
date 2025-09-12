@@ -3,7 +3,9 @@ import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import decodeToken from './../../../../utils/jwtdecode';
-const Addpopup = ({ popup, setispopupopen, type,adminid }) => {
+
+const Addpopup = ({ popup, setispopupopen, type, adminid, onTelecallerAdded }) => {
+  const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     username: "",
     email: "",
@@ -20,6 +22,8 @@ const Addpopup = ({ popup, setispopupopen, type,adminid }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
+    
     try {
       const token = localStorage.getItem("token");
       console.log(token);
@@ -44,6 +48,11 @@ const Addpopup = ({ popup, setispopupopen, type,adminid }) => {
         toast.warning("Telecaller with this email already exists.");
       } else if (response.status === 200) {
         toast.success("Telecaller added successfully");
+        
+        // Call the refresh function to update the telecaller list
+        if (onTelecallerAdded) {
+          onTelecallerAdded();
+        }
       }
   
       setFormData({
@@ -59,94 +68,138 @@ const Addpopup = ({ popup, setispopupopen, type,adminid }) => {
         setispopupopen(false);
       }, 2000);
     } catch (error) {
-      // Log error details
       console.error("❌ Error details:", error);
       
-      // Handling both network errors and response errors
       if (error.response) {
-        // The request was made, and the server responded with an error status
         toast.error(`Error: ${error.response.data.message || error.response.statusText}`);
       } else if (error.request) {
-        // The request was made, but no response was received
         toast.error("No response from server.");
       } else {
-        // Something else happened while setting up the request
         toast.error(`Error: ${error.message}`);
       }
+    } finally {
+      setIsLoading(false);
     }
-};
+  };
 
 
   return (
     popup && (
-      <div className="fixed inset-0 flex items-center justify-center z-1001">
-        <div className="absolute inset-0 bg-black opacity-50 z-1000"></div>
+      <div className="fixed inset-0 flex items-center justify-center z-50 backdrop-blur-sm">
+        <div className="absolute inset-0 bg-black/60"></div>
 
-        <div className="absolute md:w-[30%] bg-[#efeff3] z-1001 rounded-lg overflow-hidden">
-          <div className="flex justify-end p-4">
-            <i
-              className="fa fa-times text-2xl cursor-pointer text-gray-600 hover:text-gray-800"
-              onClick={() => setispopupopen(false)}
-            ></i>
-          </div>
-          <form className="add-users-model p-6 space-y-6" onSubmit={handleSubmit}>
-            <h1 className="text-center mb-4 text-2xl font-semibold text-black">
+        <div className="relative w-full max-w-md mx-4 bg-white rounded-2xl shadow-2xl overflow-hidden">
+          <div className="flex justify-between items-center p-4 bg-blue-600">
+            <h1 className="text-xl font-bold text-white">
               Add {type}
             </h1>
-
-            <div className="flex flex-col items-center space-y-4">
-              <input
-                type="text"
-                name="username"
-                value={formData.username}
-                onChange={handleChange}
-                className="p-3 w-[90%] rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Enter Name"
-              />
-              <input
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                className="p-3 w-[90%] rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Enter Email"
-              />
-              <input
-                type="password"
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                className="p-3 w-[90%] rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Create a Password"
-              />
-              <input
-                type="text"
-                name="number"
-                value={formData.number}
-                onChange={handleChange}
-                className="p-3 w-[90%] rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Enter Phone Number"
-              />
-              <input
-                type="text"
-                name="address"
-                value={formData.address}
-                onChange={handleChange}
-                className="p-3 w-[90%] rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Enter Address"
-              />
-
-              <button
-                type="submit"
-                className="w-[90%] rounded-lg border border-gray-300 p-3 border-2 border-green-300 hover:border-black hover:border-2 hover:bg-red-400"
-              >
-                Add
-              </button>
+            <button
+              className="text-white hover:text-gray-200 transition-colors p-1"
+              onClick={() => setispopupopen(false)}
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+          
+          <form className="p-6 space-y-4" onSubmit={handleSubmit}>
+            <div className="space-y-3">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                <input
+                  type="text"
+                  name="username"
+                  value={formData.username}
+                  onChange={handleChange}
+                  className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                  placeholder="Enter full name"
+                  required
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                  placeholder="Enter email address"
+                  required
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                <input
+                  type="password"
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                  placeholder="Create a password"
+                  required
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+                <input
+                  type="text"
+                  name="number"
+                  value={formData.number}
+                  onChange={handleChange}
+                  className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                  placeholder="Enter phone number"
+                  required
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
+                <textarea
+                  name="address"
+                  value={formData.address}
+                  onChange={handleChange}
+                  rows="2"
+                  className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all resize-none"
+                  placeholder="Enter address"
+                  required
+                />
+              </div>
             </div>
+
+            <button
+              type="submit"
+              disabled={isLoading}
+              className={`w-full py-3 rounded-lg font-bold text-white transition-all duration-200 flex items-center justify-center gap-2 ${
+                isLoading
+                  ? "bg-gray-400 cursor-not-allowed"
+                  : "bg-green-600 hover:bg-green-700 hover:scale-105 shadow-lg"
+              }`}
+            >
+              {isLoading ? (
+                <>
+                  <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Adding...
+                </>
+              ) : (
+                <>
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                  </svg>
+                  Add {type}
+                </>
+              )}
+            </button>
           </form>
         </div>
-              <ToastContainer position="top-center" />
-        
+        <ToastContainer position="top-center" />
       </div>
     )
   );

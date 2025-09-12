@@ -26,20 +26,20 @@ const PasswordInput = memo(({ type, value, onChange, placeholder, showPassword, 
       value={value}
       onChange={onChange}
       placeholder={placeholder}
-      className={`w-full px-4 py-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+      className={`w-full px-5 py-4 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-lg font-medium transition-all ${
         isDarkTheme 
-          ? "bg-gray-800 border-gray-600 text-white placeholder-gray-400" 
+          ? "bg-gray-800/60 border-gray-600 text-white placeholder-gray-400" 
           : "bg-white border-gray-300 text-gray-900 placeholder-gray-500"
-      }`}
+      } border`}
     />
     <button
       type="button"
       onClick={toggleShow}
-      className={`absolute right-3 top-1/2 transform -translate-y-1/2 ${
+      className={`absolute right-4 top-1/2 transform -translate-y-1/2 ${
         isDarkTheme ? "text-gray-400 hover:text-white" : "text-gray-600 hover:text-gray-900"
       }`}
     >
-      {showPassword ? <FiEyeOff className="w-5 h-5" /> : <FiEye className="w-5 h-5" />}
+      {showPassword ? <FiEyeOff className="w-6 h-6" /> : <FiEye className="w-6 h-6" />}
     </button>
   </div>
 ));
@@ -178,38 +178,42 @@ const SuperadminProfile = () => {
   }
 
   return (
-    <div className={`flex min-h-screen ${isDarkTheme ? 'bg-gradient-to-br from-gray-900 to-gray-800' : 'bg-gray-200'}`}>
+    <div className={`flex min-h-screen ${isDarkTheme ? 'bg-gradient-to-br from-gray-900 to-gray-800' : 'bg-gradient-to-br from-gray-50 to-white'}`}>
       <div className="lg:w-[250px] w-0">
         <Sidebar />
       </div>
 
-      <div className="flex-1 min-h-screen w-full p-8 overflow-auto">
+      <div className="flex-1 min-h-screen w-full p-0 md:p-10 overflow-auto">
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="w-full h-full flex flex-col items-center"
         >
-          <div className={`w-full max-w-6xl rounded-2xl shadow-xl p-8 ${
+          <div className={`w-full max-w-6xl rounded-3xl shadow-2xl p-10 backdrop-blur-lg ${
             isDarkTheme 
-              ? "bg-gray-800 border-gray-700" 
-              : "bg-white border-gray-200"
-          }`}>
-            <div className="relative flex items-center justify-between mb-8">
-              <h1 className={`text-3xl font-bold ${isDarkTheme ? "text-white" : "text-gray-900"}`}>Profile</h1>
+              ? "bg-gray-800/90 border-gray-700/50" 
+              : "bg-white/90 border-gray-200/50"
+          } border`}>
+            <div className="relative flex items-center justify-between mb-12">
+              <h1 className={`text-5xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r ${
+                isDarkTheme ? 'from-blue-400 to-purple-400' : 'from-blue-600 to-purple-600'
+              }`}>
+                Profile
+              </h1>
               <div className="flex gap-4">
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={() => setActiveTab(activeTab === "profile" ? "password" : "profile")}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                  className={`flex items-center gap-3 px-6 py-3 rounded-xl text-base font-bold transition-all duration-200 shadow-lg ${
                     activeTab === "password" 
-                      ? "bg-blue-600 hover:bg-blue-700 text-white" 
+                      ? "bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white" 
                       : isDarkTheme 
                         ? "bg-gray-700 hover:bg-gray-600 text-white" 
-                        : "bg-gray-200 hover:bg-gray-300 text-gray-900"
+                        : "bg-gray-100 hover:bg-gray-200 text-gray-900"
                   }`}
                 >
-                  <FiLock className="w-4 h-4" />
+                  <FiLock className="w-5 h-5" />
                   {activeTab === "password" ? "Back to Profile" : "Change Password"}
                 </motion.button>
               </div>
@@ -217,12 +221,15 @@ const SuperadminProfile = () => {
 
             {activeTab === "profile" ? (
               <>
-                <div className="flex flex-col md:flex-row items-center gap-8 mb-12">
-                  <motion.div whileHover={{ scale: 1.05 }} className="relative group">
-                    <div className={`w-32 h-32 rounded-full flex items-center justify-center text-4xl font-bold shadow-lg ${
+                <div className="flex flex-col md:flex-row items-center gap-10 mb-16">
+                  <motion.div 
+                    whileHover={{ scale: 1.05 }} 
+                    className="relative group"
+                  >
+                    <div className={`w-40 h-40 rounded-full flex items-center justify-center text-5xl font-extrabold shadow-2xl ${
                       isDarkTheme 
-                        ? "bg-gray-700 text-white" 
-                        : "bg-gray-200 text-gray-900"
+                        ? "bg-gradient-to-br from-gray-700 to-gray-800 text-white" 
+                        : "bg-gradient-to-br from-blue-100 to-purple-100 text-gray-900"
                     }`}>
                       S
                     </div>
@@ -231,48 +238,48 @@ const SuperadminProfile = () => {
                       whileHover={{ opacity: 1 }}
                       className="absolute inset-0 flex items-center justify-center rounded-full bg-black/50 cursor-pointer"
                     >
-                      <FiEdit2 className="w-6 h-6 text-white" />
+                      <FiEdit2 className="w-8 h-8 text-white" />
                     </motion.div>
                   </motion.div>
                   
-                  <div className="flex-1">
-                    <h2 className={`text-3xl font-bold mb-2 ${isDarkTheme ? "text-white" : "text-gray-900"}`}>
+                  <div className="flex-1 text-center md:text-left">
+                    <h2 className={`text-4xl font-extrabold mb-3 ${isDarkTheme ? "text-white" : "text-gray-900"}`}>
                       {superadmindata.superadmindata?.username}
                     </h2>
-                    <p className={`text-lg mb-4 ${isDarkTheme ? "text-gray-400" : "text-gray-600"}`}>
+                    <p className={`text-xl mb-6 ${isDarkTheme ? "text-gray-300" : "text-gray-600"}`}>
                       {superadmindata.superadmindata?.email}
                     </p>
-                    <div className="flex gap-4">
-                      <span className="px-3 py-1 bg-green-500/20 text-green-600 rounded-full text-sm">Active</span>
-                      <span className="px-3 py-1 bg-blue-500/20 text-blue-600 rounded-full text-sm">Full Access</span>
+                    <div className="flex gap-4 justify-center md:justify-start">
+                      <span className="px-4 py-2 bg-green-500/20 text-green-600 rounded-full text-base font-semibold">Active</span>
+                      <span className="px-4 py-2 bg-blue-500/20 text-blue-600 rounded-full text-base font-semibold">Full Access</span>
                     </div>
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                   {stats.map((stat, index) => (
                     <motion.div
                       key={index}
-                      whileHover={{ scale: 1.03 }}
+                      whileHover={{ scale: 1.05, y: -5 }}
                       onHoverStart={() => setIsHovering(index)}
                       onHoverEnd={() => setIsHovering(null)}
-                      className={`relative rounded-xl p-6 transition-all duration-300 ${
+                      className={`relative rounded-2xl p-8 transition-all duration-300 backdrop-blur-sm ${
                         isDarkTheme 
-                          ? "bg-gray-700 border-gray-600 hover:border-blue-500" 
-                          : "bg-white border-gray-200 hover:border-blue-500 shadow-sm"
-                      }`}
+                          ? "bg-gradient-to-br from-gray-700/80 to-gray-800/80 border-gray-600/50 hover:border-blue-500/50" 
+                          : "bg-gradient-to-br from-white/80 to-blue-50/80 border-gray-200/50 hover:border-blue-500/50 shadow-lg"
+                      } border`}
                     >
                       <motion.div
                         animate={{
-                          scale: isHovering === index ? 1.1 : 1,
+                          scale: isHovering === index ? 1.2 : 1,
                           color: isHovering === index ? "#60A5FA" : isDarkTheme ? "#9CA3AF" : "#4B5563"
                         }}
-                        className="absolute top-4 right-4"
+                        className="absolute top-6 right-6"
                       >
-                        <stat.icon className={`w-6 h-6 ${isDarkTheme ? "text-white" : "text-gray-600"}`} />
+                        <stat.icon className={`w-8 h-8 ${isDarkTheme ? "text-white" : "text-gray-600"}`} />
                       </motion.div>
-                      <p className={isDarkTheme ? "text-gray-400" : "text-gray-600" + " text-sm mb-2"}>{stat.label}</p>
-                      <p className={`text-2xl font-bold ${isDarkTheme ? "text-white" : "text-gray-900"}`}>{stat.value}</p>
+                      <p className={isDarkTheme ? "text-gray-300" : "text-gray-600" + " text-base mb-3 font-medium"}>{stat.label}</p>
+                      <p className={`text-3xl font-extrabold ${isDarkTheme ? "text-white" : "text-gray-900"}`}>{stat.value}</p>
                     </motion.div>
                   ))}
                 </div>
@@ -282,13 +289,13 @@ const SuperadminProfile = () => {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className={`rounded-xl p-6 ${
+                className={`rounded-2xl p-8 backdrop-blur-sm ${
                   isDarkTheme 
-                    ? "bg-gray-700 border-gray-600" 
-                    : "bg-white border-gray-200 shadow-sm"
-                }`}
+                    ? "bg-gradient-to-br from-gray-700/80 to-gray-800/80 border-gray-600/50" 
+                    : "bg-gradient-to-br from-white/80 to-blue-50/80 border-gray-200/50 shadow-lg"
+                } border`}
               >
-                <h3 className={`text-xl font-semibold mb-6 ${isDarkTheme ? "text-white" : "text-gray-900"}`}>
+                <h3 className={`text-2xl font-bold mb-8 ${isDarkTheme ? "text-white" : "text-gray-900"}`}>
                   Change Password
                 </h3>
                 {error && (
@@ -301,7 +308,7 @@ const SuperadminProfile = () => {
                     {success}
                   </div>
                 )}
-                <form onSubmit={handlePasswordChange} className="space-y-4">
+                <form onSubmit={handlePasswordChange} className="space-y-6">
                   <PasswordInput
                     type="old"
                     value={passwordData.oldPassword}
@@ -329,14 +336,14 @@ const SuperadminProfile = () => {
                     toggleShow={() => togglePasswordVisibility('confirm')}
                     isDarkTheme={isDarkTheme}
                   />
-                  <div className="flex gap-4">
+                  <div className="flex gap-6 pt-4">
                     <motion.button
                       type="submit"
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
-                      className="flex-1 flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 px-6 py-3 rounded-lg font-medium text-white"
+                      className="flex-1 flex items-center justify-center gap-3 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 px-8 py-4 rounded-xl font-bold text-white text-lg shadow-lg"
                     >
-                      <FiCheck className="w-5 h-5" />
+                      <FiCheck className="w-6 h-6" />
                       Save Changes
                     </motion.button>
                     <motion.button
@@ -344,13 +351,13 @@ const SuperadminProfile = () => {
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                       onClick={() => setActiveTab("profile")}
-                      className={`flex-1 flex items-center justify-center gap-2 px-6 py-3 rounded-lg font-medium ${
+                      className={`flex-1 flex items-center justify-center gap-3 px-8 py-4 rounded-xl font-bold text-lg shadow-lg ${
                         isDarkTheme 
                           ? "bg-gray-600 hover:bg-gray-500 text-white" 
                           : "bg-gray-200 hover:bg-gray-300 text-gray-900"
                       }`}
                     >
-                      <FiX className="w-5 h-5" />
+                      <FiX className="w-6 h-6" />
                       Cancel
                     </motion.button>
                   </div>

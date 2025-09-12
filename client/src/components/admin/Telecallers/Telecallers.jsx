@@ -21,35 +21,35 @@ const Telecallers = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const { isDarkTheme } = useThemeStore();
 
-  useEffect(() => {
-    const fetchalltelecallers = async () => {
-      try {
-        setloading1(true);
-        const token = localStorage.getItem("token");
-        const tokenvalidation = decodeToken(token);
-        const adminId = tokenvalidation.adminId;
-        setadminid(adminId);
-        const databaseName = tokenvalidation.databaseName;
-  
-        const response = await axios.get(
-          `${process.env.REACT_APP_API_URL}/admin/getalltelecaller`,
-          { headers: { database: databaseName } }
-        );
-  
-        setloading1(false);
-        
-        if (response.status === 200 && response.data.alltelecallers) {
-          settelecallerdata(response.data.alltelecallers);
-        } else {
-          settelecallerdata([]); 
-        }
-      } catch (error) {
-        setloading1(false);
-        console.error("Error fetching telecallers:", error);
-        settelecallerdata([]);  
+  const fetchalltelecallers = async () => {
+    try {
+      setloading1(true);
+      const token = localStorage.getItem("token");
+      const tokenvalidation = decodeToken(token);
+      const adminId = tokenvalidation.adminId;
+      setadminid(adminId);
+      const databaseName = tokenvalidation.databaseName;
+
+      const response = await axios.get(
+        `${process.env.REACT_APP_API_URL}/admin/getalltelecaller`,
+        { headers: { database: databaseName } }
+      );
+
+      setloading1(false);
+      
+      if (response.status === 200 && response.data.alltelecallers) {
+        settelecallerdata(response.data.alltelecallers);
+      } else {
+        settelecallerdata([]); 
       }
-    };
-  
+    } catch (error) {
+      setloading1(false);
+      console.error("Error fetching telecallers:", error);
+      settelecallerdata([]);  
+    }
+  };
+
+  useEffect(() => {
     fetchalltelecallers();
   }, []);
   
@@ -281,6 +281,7 @@ const Telecallers = () => {
           setispopupopen={setispopupopen}
           type={"Telecaller"}
           adminid={adminid}
+          onTelecallerAdded={fetchalltelecallers}
         />
       </div>
     </div>
